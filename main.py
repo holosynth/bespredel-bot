@@ -2,32 +2,36 @@ import asyncio
 import discord
 from discord.ext import commands
 from discord.ui import View, Button, Modal, TextInput
-from flask import Flask
 import os
 import time
 from datetime import datetime
-from threading import Thread
 
-# ========== FLASK ДЛЯ 24/7 ==========
-app = Flask('')
+# ========== НАСТРОЙКИ ==========
+TOKEN = os.getenv("DISCORD_TOKEN")
+if not TOKEN:
+    print("❌ Токен не найден! Установите переменную DISCORD_TOKEN")
+    exit()
 
-@app.route('/')
-def home():
-    return "✅ BESPREDEL Bot 24/7"
+# ТВОИ НАСТРОЙКИ
+GUILD_ID = 862025227491213362
+CHANNEL_APPLICATIONS = 1232678532501475338
+CHANNEL_MODERATION = 1455277143037841726
+CHANNEL_DECISIONS = 1455628223890063511
 
-@app.route('/health')
-def health():
-    return "OK", 200
+ROLE_LEADER = 898200620484419634
+ROLE_DEPUTY = 1232399561486766130
+ROLE_HOMIE = 1232443801222778911
 
-def run_flask():
-    port = int(os.environ.get('PORT', 8080))
-    app.run(host='0.0.0.0', port=port, debug=False)
+# Хранилище
+applications = {}
+moderation_messages = {}
 
-# Запускаем Flask только если это основной процесс
-if __name__ != '__main__':  # Bothost запускает как модуль
-    flask_thread = Thread(target=run_flask, daemon=True)
-    flask_thread.start()
-    print(f"🌐 Flask сервер запущен на порту {port}")
+# ========== БОТ ==========
+intents = discord.Intents.default()
+intents.message_content = True
+intents.members = True
+
+bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
 # ========== НАСТРОЙКИ ==========
 TOKEN = os.getenv("DISCORD_TOKEN")
